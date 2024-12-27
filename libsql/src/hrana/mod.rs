@@ -288,6 +288,10 @@ where
             ))))
         }
     }
+
+    fn column_decltype(&self, _idx: i32) -> Option<&str> {
+        todo!()
+    }
 }
 
 #[derive(Debug)]
@@ -346,6 +350,10 @@ impl ColumnsInner for Row {
 
     fn column_count(&self) -> i32 {
         self.cols.len() as i32
+    }
+
+    fn column_decltype(&self, _idx: i32) -> Option<&str> {
+        todo!()
     }
 }
 
@@ -444,5 +452,9 @@ impl ColumnsInner for StmtResultRows {
             .and_then(|r| r.decltype.as_ref())
             .ok_or(crate::Error::InvalidColumnType)
             .and_then(|v| v.parse().map_err(|_| crate::Error::InvalidColumnType))
+    }
+
+    fn column_decltype(&self, _idx: i32) -> Option<&str> {
+        todo!()
     }
 }

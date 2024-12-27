@@ -8,8 +8,8 @@ use libsql_sys::ValueType;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::ffi::c_char;
-use std::fmt;
 use std::sync::Arc;
+use std::{fmt, str};
 /// Query result rows.
 #[derive(Debug, Clone)]
 pub struct Rows {
@@ -73,6 +73,10 @@ impl Rows {
             libsql_sys::ffi::SQLITE_NULL => Ok(ValueType::Null),
             _ => unreachable!("unknown column type {} at index {}", val, idx),
         }
+    }
+
+    pub fn column_decltype(&self, idx: i32) -> Option<&str> {
+        self.stmt.inner.column_decltype(idx)
     }
 }
 
@@ -141,6 +145,10 @@ impl Row {
             libsql_sys::ffi::SQLITE_NULL => Ok(ValueType::Null),
             _ => unreachable!("unknown column type: {} at index {}", val, idx),
         }
+    }
+
+    pub fn column_decltype(&self, idx: i32) -> Option<&str> {
+        self.stmt.inner.column_decltype(idx)
     }
 
     pub fn column_name(&self, idx: i32) -> Option<&str> {
@@ -230,6 +238,10 @@ impl ColumnsInner for BatchedRows {
             .ok_or(Error::InvalidColumnIndex)
             .map(|(_, vt)| vt.clone())
     }
+
+    fn column_decltype(&self, _idx: i32) -> Option<&str> {
+        todo!()
+    }
 }
 
 #[derive(Debug)]
@@ -272,6 +284,10 @@ impl ColumnsInner for BatchedRow {
             .get(idx as usize)
             .ok_or(Error::InvalidColumnIndex)
             .map(|(_, vt)| vt.clone())
+    }
+
+    fn column_decltype(&self, _idx: i32) -> Option<&str> {
+        todo!()
     }
 }
 

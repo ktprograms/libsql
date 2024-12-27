@@ -287,6 +287,7 @@ impl<T> Sealed for Option<T> {}
 pub(crate) trait ColumnsInner {
     fn column_name(&self, idx: i32) -> Option<&str>;
     fn column_type(&self, idx: i32) -> Result<ValueType>;
+    fn column_decltype(&self, idx: i32) -> Option<&str>;
     fn column_count(&self) -> i32;
 }
 

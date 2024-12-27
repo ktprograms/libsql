@@ -1,13 +1,13 @@
 // TODO(lucio): Move this to `remote/mod.rs`
 
-use std::str::FromStr;
-use std::sync::Arc;
-use std::sync::atomic::AtomicU64;
 use libsql_replication::rpc::proxy::{
     describe_result, query_result::RowResult, Cond, DescribeResult, ExecuteResults, NotCond,
     OkCond, Positional, Query, ResultRows, State as RemoteState, Step,
 };
 use parking_lot::Mutex;
+use std::str::FromStr;
+use std::sync::atomic::AtomicU64;
+use std::sync::Arc;
 
 use crate::parser;
 use crate::parser::StmtKind;
@@ -167,7 +167,11 @@ impl From<RemoteState> for State {
 }
 
 impl RemoteConnection {
-    pub(crate) fn new(local: LibsqlConnection, writer: Option<Writer>, max_write_replication_index: Arc<AtomicU64>) -> Self {
+    pub(crate) fn new(
+        local: LibsqlConnection,
+        writer: Option<Writer>,
+        max_write_replication_index: Arc<AtomicU64>,
+    ) -> Self {
         let state = Arc::new(Mutex::new(Inner::default()));
         Self {
             local,
@@ -179,9 +183,16 @@ impl RemoteConnection {
 
     fn update_max_write_replication_index(&self, index: Option<u64>) {
         if let Some(index) = index {
-            let mut current = self.max_write_replication_index.load(std::sync::atomic::Ordering::SeqCst);
+            let mut current = self
+                .max_write_replication_index
+                .load(std::sync::atomic::Ordering::SeqCst);
             while index > current {
-                match self.max_write_replication_index.compare_exchange(current, index, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst) {
+                match self.max_write_replication_index.compare_exchange(
+                    current,
+                    index,
+                    std::sync::atomic::Ordering::SeqCst,
+                    std::sync::atomic::Ordering::SeqCst,
+                ) {
                     Ok(_) => break,
                     Err(new_current) => current = new_current,
                 }
@@ -825,6 +836,10 @@ impl ColumnsInner for RemoteRows {
             .map(ValueType::from)
             .ok_or(Error::InvalidColumnType)
     }
+
+    fn column_decltype(&self, _idx: i32) -> Option<&str> {
+        todo!()
+    }
 }
 
 #[derive(Debug)]
@@ -864,6 +879,10 @@ impl ColumnsInner for RemoteRow {
 
     fn column_count(&self) -> i32 {
         self.1.len() as i32
+    }
+
+    fn column_decltype(&self, _idx: i32) -> Option<&str> {
+        todo!()
     }
 }
 

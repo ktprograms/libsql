@@ -177,6 +177,10 @@ impl ColumnsInner for LibsqlRows {
     fn column_type(&self, idx: i32) -> Result<ValueType> {
         self.0.column_type(idx).map(ValueType::from)
     }
+
+    fn column_decltype(&self, idx: i32) -> Option<&str> {
+        self.0.column_decltype(idx)
+    }
 }
 
 struct LibsqlRow(crate::local::Row);
@@ -202,6 +206,10 @@ impl ColumnsInner for LibsqlRow {
 
     fn column_count(&self) -> i32 {
         self.0.stmt.column_count() as i32
+    }
+
+    fn column_decltype(&self, idx: i32) -> Option<&str> {
+        self.0.column_decltype(idx)
     }
 }
 
