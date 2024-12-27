@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 		goto quit;
 	}
 
-	retval = libsql_execute(conn, "CREATE TABLE IF NOT EXISTS guest_book_entries (text TEXT)", &err);
+	retval = libsql_execute(conn, "CREATE TABLE IF NOT EXISTS guest_book_entries (text TIMESTAMP)", &err);
 	if (retval != 0) {
         fprintf(stderr, "%s\n", err);
         goto quit;
@@ -68,6 +68,12 @@ int main(int argc, char *argv[])
         goto quit;
     }
 
+	retval = libsql_execute(conn, "INSERT INTO guest_book_entries VALUES(42)", &err);
+	if (retval != 0) {
+        fprintf(stderr, "%s\n", err);
+        goto quit;
+    }
+
 	retval = libsql_query(conn, "SELECT text FROM guest_book_entries", &rows, &err);
 	if (retval != 0) {
 		fprintf(stderr, "%s\n", err);
@@ -79,11 +85,27 @@ int main(int argc, char *argv[])
 			break;
 		}
         const char * value = NULL;
+	int type_value = 0;
         retval = libsql_get_string(row, 0, &value, &err);
         if (retval != 0) {
             fprintf(stderr, "%s\n", err);
         } else {
             printf("%s\n", value);
+            libsql_free_string(value);
+            value = NULL;
+        }
+	    retval = libsql_column_type(rows, row, 0, &type_value, &err);
+        if (retval != 0) {
+            fprintf(stderr, "%s\n", err);
+        } else {
+            printf("TYPE: %d\n", type_value);
+	    type_value = 0;
+        }
+	    retval = libsql_column_decltype(rows, 0, &value, &err);
+        if (retval != 0) {
+            fprintf(stderr, "%s\n", err);
+        } else {
+            printf("DECLTYPE: %s\n", value);
             libsql_free_string(value);
             value = NULL;
         }
