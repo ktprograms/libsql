@@ -933,6 +933,40 @@ pub unsafe extern "C" fn libsql_column_type(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn libsql_column_decltype(
+    res: libsql_rows_t,
+    col: std::ffi::c_int,
+    out_decltype: *mut *const std::ffi::c_char,
+    out_err_msg: *mut *const std::ffi::c_char,
+) -> std::ffi::c_int {
+    let res = res.get_ref();
+    if col >= res.column_count() {
+        set_err_msg(
+            format!(
+                "Column index too big - got index {} with {} columns",
+                col,
+                res.column_count()
+            ),
+            out_err_msg,
+        );
+        return 1;
+    }
+    let decltype = res
+        .column_decltype(col)
+        .expect("Column should have valid index");
+    match std::ffi::CString::new(decltype) {
+        Ok(decltype) => {
+            *out_decltype = decltype.into_raw();
+            0
+        }
+        Err(e) => {
+            set_err_msg(format!("Invalid decltype: {}", e), out_err_msg);
+            1
+        }
+    }
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn libsql_changes(conn: libsql_connection_t) -> u64 {
     let conn = conn.get_ref();
     conn.changes()

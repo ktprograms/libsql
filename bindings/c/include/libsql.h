@@ -145,6 +145,8 @@ int libsql_column_name(libsql_rows_t res, int col, const char **out_name, const 
 
 int libsql_column_type(libsql_rows_t res, libsql_row_t row, int col, int *out_type, const char **out_err_msg);
 
+int libsql_column_decltype(libsql_rows_t res, int col, const char **out_decltype, const char **out_err_msg);
+
 uint64_t libsql_changes(libsql_connection_t conn);
 
 int64_t libsql_last_insert_rowid(libsql_connection_t conn);

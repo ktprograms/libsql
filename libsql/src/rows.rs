@@ -1,5 +1,5 @@
 use crate::{Result, Value, ValueType};
-use std::fmt;
+use std::{fmt, str};
 
 /// Represents a libsql column.
 pub struct Column<'stmt> {
@@ -74,6 +74,11 @@ impl Rows {
     /// Fetch the column type from the provided column index.
     pub fn column_type(&self, idx: i32) -> Result<ValueType> {
         self.inner.column_type(idx)
+    }
+
+    /// Fetch the declared column type from the provided column index.
+    pub fn column_decltype(&self, idx: i32) -> Option<&str> {
+        self.inner.column_decltype(idx)
     }
 
     /// Converts current [Rows] into asynchronous stream, fetching rows
