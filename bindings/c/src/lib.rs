@@ -343,12 +343,13 @@ pub unsafe extern "C" fn libsql_open_ext(
     out_db: *mut libsql_database_t,
     out_err_msg: *mut *const std::ffi::c_char,
 ) -> std::ffi::c_int {
-    libsql_open_file(url, out_db, out_err_msg)
+    libsql_open_file(url, std::ptr::null(), out_db, out_err_msg)
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn libsql_open_file(
     url: *const std::ffi::c_char,
+    encryption_key: *const std::ffi::c_char,
     out_db: *mut libsql_database_t,
     out_err_msg: *mut *const std::ffi::c_char,
 ) -> std::ffi::c_int {
@@ -360,7 +361,21 @@ pub unsafe extern "C" fn libsql_open_file(
             return 1;
         }
     };
-    match RT.block_on(libsql::Builder::new_local(url).build()) {
+    let mut builder = libsql::Builder::new_local(url);
+    if !encryption_key.is_null() {
+        let key = unsafe { std::ffi::CStr::from_ptr(encryption_key) };
+        let key = match key.to_str() {
+            Ok(k) => k,
+            Err(e) => {
+                set_err_msg(format!("Wrong encryption key: {e}"), out_err_msg);
+                return 5;
+            }
+        };
+        let key = bytes::Bytes::copy_from_slice(key.as_bytes());
+        let config = libsql::EncryptionConfig::new(libsql::Cipher::Aes256Cbc, key);
+        builder = builder.encryption_config(config)
+    };
+    match RT.block_on(builder.build()) {
         Ok(db) => {
             let db = Box::leak(Box::new(libsql_database { db }));
             *out_db = libsql_database_t::from(db);

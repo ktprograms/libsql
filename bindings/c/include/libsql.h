@@ -87,7 +87,7 @@ int libsql_open_sync_with_config(libsql_config config, libsql_database_t *out_db
 
 int libsql_open_ext(const char *url, libsql_database_t *out_db, const char **out_err_msg);
 
-int libsql_open_file(const char *url, libsql_database_t *out_db, const char **out_err_msg);
+int libsql_open_file(const char *url, const char *encryption_key, libsql_database_t *out_db, const char **out_err_msg);
 
 int libsql_open_remote(const char *url, const char *auth_token, libsql_database_t *out_db, const char **out_err_msg);
 
