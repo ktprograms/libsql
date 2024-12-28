@@ -32,6 +32,10 @@ exclude = [
 [profile.release]
 codegen-units = 1
 panic = "unwind"
+debug = false # Exclude debug symbols
+strip = "symbols" # Exclude the rest of the symbols
+opt-level = "z" # Did not use this, but it equals C++'s optimize for size (O3?)
+lto = true # Link time optimization, not sure what this does but it helps reduce the size
 
 [workspace.dependencies]
 rusqlite = { package = "libsql-rusqlite", path = "vendored/rusqlite", version = "0.33", default-features = false, features = [
