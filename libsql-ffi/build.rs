@@ -375,11 +375,11 @@ fn build_multiple_ciphers(target: &str, out_path: &Path) {
         writeln!(toolchain_file, "set(CMAKE_CXX_COMPILER {})", cxx).unwrap();
     }
 
-    cmake_opts.push("-DCMAKE_BUILD_TYPE=Release");
+    cmake_opts.push("-DCMAKE_BUILD_TYPE=Debug");
     cmake_opts.push("-DSQLITE3MC_STATIC=ON");
     cmake_opts.push("-DCODEC_TYPE=CHACHA20");
-    cmake_opts.push("-DSQLITE3MC_BUILD_SHELL=OFF");
-    cmake_opts.push("-DSQLITE_SHELL_IS_UTF8=OFF");
+    cmake_opts.push("-DSQLITE3MC_BUILD_SHELL=ON");
+    cmake_opts.push("-DSQLITE_SHELL_IS_UTF8=ON");
     cmake_opts.push("-DSQLITE_USER_AUTHENTICATION=OFF");
     cmake_opts.push("-DSQLITE_SECURE_DELETE=OFF");
     cmake_opts.push("-DSQLITE_ENABLE_COLUMN_METADATA=ON");
