@@ -372,7 +372,7 @@ pub unsafe extern "C" fn libsql_open_file(
             }
         };
         let key = bytes::Bytes::copy_from_slice(key.as_bytes());
-        let config = libsql::EncryptionConfig::new(libsql::Cipher::Aes256Cbc, key);
+        let config = libsql::EncryptionConfig::new(libsql::Cipher::ChaCha20, key);
         builder = builder.encryption_config(config)
     };
     match RT.block_on(builder.build()) {
