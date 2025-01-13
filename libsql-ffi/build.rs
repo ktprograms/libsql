@@ -377,7 +377,7 @@ fn build_multiple_ciphers(target: &str, out_path: &Path) {
 
     cmake_opts.push("-DCMAKE_BUILD_TYPE=Release");
     cmake_opts.push("-DSQLITE3MC_STATIC=ON");
-    cmake_opts.push("-DCODEC_TYPE=AES256");
+    cmake_opts.push("-DCODEC_TYPE=CHACHA20");
     cmake_opts.push("-DSQLITE3MC_BUILD_SHELL=OFF");
     cmake_opts.push("-DSQLITE_SHELL_IS_UTF8=OFF");
     cmake_opts.push("-DSQLITE_USER_AUTHENTICATION=OFF");
