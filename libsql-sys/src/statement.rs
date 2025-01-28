@@ -147,7 +147,10 @@ impl Statement {
     pub fn column_decltype(&self, idx: i32) -> Option<&str> {
         let raw_name = unsafe { crate::ffi::sqlite3_column_decltype(self.raw_stmt, idx) };
         if raw_name.is_null() {
-            return None;
+            // column ... is an expression or subquery
+            // https://www.sqlite.org/c3ref/column_decltype.html
+            // TODO: Should the None be handled higher up?
+            return Some("");
         }
         let raw_name = unsafe { std::ffi::CStr::from_ptr(raw_name as *const c_char) };
         let raw_name = raw_name.to_str().unwrap();
